@@ -1,0 +1,18 @@
+trigger:
+  - none
+variables:
+  - group: Resources
+
+jobs:
+  - job: Process
+    timeoutInMinutes: 360
+    cancelTimeoutInMinutes: 2
+    pool: "$(selfhostedname)"
+
+    steps:
+      - task: AzurePowerShell@4
+        displayName: "Azure PowerShell script: FilePath"
+        inputs:
+          azureSubscription: "$(SubscriptionName)"
+          ScriptPath: EncryptionForExistingVms/EncryptVM.ps1
+          azurePowerShellVersion: LatestVersion

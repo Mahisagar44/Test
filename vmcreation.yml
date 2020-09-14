@@ -1,0 +1,26 @@
+trigger:
+  - none
+variables:
+  - group: Resources
+
+jobs:
+  - job: Process
+    timeoutInMinutes: 360
+    cancelTimeoutInMinutes: 2
+    pool: "$(selfhostedname)"
+
+    steps:
+      - task: AzureKeyVault@1
+        inputs:
+          azureSubscription: "$(SubscriptionName)"
+          keyVaultName: "$(keyvaultNewname)"
+          secretsFilter: "*"
+          RunAsPreJob: true
+
+      - task: AzurePowerShell@4
+        displayName: "Azure PowerShell script: FilePath"
+        inputs:
+          azureSubscription: "$(SubscriptionName)"
+          ScriptPath: VMCreation/vmcreation.ps1
+          ScriptArguments: '-AdminPassword "$(AdminPassword)" -domainPassword "$(DomainPassword)" -DomainToJoin "$(DomainJoin)" -DomainUsername "$(DomainUsername)" -AdminUsername "$(AdminUsername)" -OUPath "$(OUPath)" -DomainJoinOptions "$(domaintoJoinOptions)"  -umsWorkspaceName "$(aumworkspace)" -DiskEncryptionSetName "$(DiskEncryptionSetName)" -loganalyticsRG "$(loganalyticsRG)"'
+          azurePowerShellVersion: LatestVersion
